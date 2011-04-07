@@ -2,7 +2,7 @@ require 'test_helper'
 
 class ElasticIndexTest < Test::Unit::TestCase
   
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index
   end
 

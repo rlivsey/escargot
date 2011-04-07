@@ -4,7 +4,7 @@ require 'test_helper'
 class NrtEnqueue < Test::Unit::TestCase
     resque_available
 
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index :updates => :enqueue
   end
 

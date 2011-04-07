@@ -7,9 +7,11 @@ task :default => :test
 
 desc 'Test the elastic_rails plugin.'
 Rake::TestTask.new(:test) do |t|
+  adapter = ENV["ADAPTER"] || "active_record"
+
   t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = 'test/*_test.rb', "test/#{adapter}/*_test.rb"
   t.verbose = true
 end
 

@@ -6,13 +6,12 @@ require 'test_helper'
 
 class BasicSearchTest < Test::Unit::TestCase
     
-  class ::User < ActiveRecord::Base
+  TestModel("User", Object) do
     elastic_index :updates => false, :mapping => {
         :properties => {
           :country_code => {:type => "string", :index => "not_analyzed"}
         }
     }
-    
   end
 
   def setup

@@ -4,18 +4,16 @@ require 'test_helper'
 class SearchMultipleModels < Test::Unit::TestCase
 
     flush_indexes_models
-  
-  class User < ActiveRecord::Base
-    elastic_index
-  end
-  
-  class LegacyUser < ActiveRecord::Base
-    set_primary_key :legacy_id
+
+  TestModel("User") do
     elastic_index
   end
 
-  class RenewUser < ActiveRecord::Base
-    set_primary_key :renew_id
+  TestModel("Dog") do
+    elastic_index
+  end
+
+  TestModel("Cat") do
     elastic_index
   end
 
@@ -27,17 +25,17 @@ class SearchMultipleModels < Test::Unit::TestCase
     User.new(:name => 'Grillo').save!
     User.new(:name => 'Mencho').save!
 
-    LegacyUser.new(:name => 'Cote').save!
-    LegacyUser.new(:name => 'Cote').save!
-    LegacyUser.new(:name => 'Grillo').save!
+    Dog.new(:name => 'Cote').save!
+    Dog.new(:name => 'Cote').save!
+    Dog.new(:name => 'Grillo').save!
 
-    RenewUser.new(:name => 'Cote').save!
-    RenewUser.new(:name => 'Cote').save!
-    RenewUser.new(:name => 'Mencho').save!
-    
+    Cat.new(:name => 'Cote').save!
+    Cat.new(:name => 'Cote').save!
+    Cat.new(:name => 'Mencho').save!
+
     User.refresh_index
-    LegacyUser.refresh_index
-    RenewUser.refresh_index
+    Dog.refresh_index
+    Cat.refresh_index
 
   end
 
@@ -45,14 +43,14 @@ class SearchMultipleModels < Test::Unit::TestCase
   def teardown
     User.delete_all
     User.delete_index
-    LegacyUser.delete_all
-    LegacyUser.delete_index
-    RenewUser.delete_all
-    RenewUser.delete_index
+    Dog.delete_all
+    Dog.delete_index
+    Cat.delete_all
+    Cat.delete_index
     Escargot.flush_all_indexed_models
   end
-  
-  
+
+
   def test_search_multiple_models
 
     # Search "Cote" in all Models
@@ -64,10 +62,10 @@ class SearchMultipleModels < Test::Unit::TestCase
     # Search "Cote" in model User, if it's only one model you don't need pass like array
     assert_equal Escargot.search("Cote", :classes => User).total_entries, 1
 
-    # Search "Cote" in model LegacyUser
-    assert_equal Escargot.search("Cote", :classes =>[LegacyUser]).total_entries, 2
+    # Search "Cote" in model Dog
+    assert_equal Escargot.search("Cote", :classes =>[Dog]).total_entries, 2
 
-    # Search "Cote" in model User, LegacyUser
-    assert_equal Escargot.search("Cote", :classes =>[User,LegacyUser]).total_entries, 3
+    # Search "Cote" in model User, Dog
+    assert_equal Escargot.search("Cote", :classes =>[User,Dog]).total_entries, 3
   end
 end

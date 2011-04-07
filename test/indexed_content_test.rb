@@ -6,7 +6,7 @@ require 'test_helper'
 
 class IndexedContentTest < Test::Unit::TestCase
     
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index
     
     def indexed_json_document

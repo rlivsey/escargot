@@ -5,7 +5,7 @@ require 'test_helper'
 class NrtImmediateWithRefreshTest < Test::Unit::TestCase
     resque_available
   
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index :updates => :immediate_with_refresh
   end
   

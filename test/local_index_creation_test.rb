@@ -5,7 +5,7 @@ require 'test_helper'
 
 class LocalIndexCreation < Test::Unit::TestCase
     
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index :updates => false
   end
 
@@ -31,8 +31,8 @@ class LocalIndexCreation < Test::Unit::TestCase
     
     # create a second version of the index
     
-    User.find(:first).destroy
-    User.find(:first).destroy
+    User.first.destroy
+    User.first.destroy
     
     Escargot::LocalIndexing.create_index_for_model(User)
     

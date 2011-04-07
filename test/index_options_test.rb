@@ -3,7 +3,7 @@ require 'test_helper'
 
 class CustomIndexOptions < Test::Unit::TestCase
   
-  class User < ActiveRecord::Base
+  TestModel("User") do
     elastic_index(
       :updates => false, 
       :index_options => {
