@@ -1,6 +1,6 @@
 # Escargot
 require 'elasticsearch'
-require 'escargot/activerecord_ex'
+require 'escargot/model_ex'
 require 'escargot/elasticsearch_ex'
 require 'escargot/local_indexing'
 require 'escargot/distributed_indexing'

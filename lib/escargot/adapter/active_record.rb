@@ -1,7 +1,7 @@
 require 'escargot'
 
 ActiveRecord::Base.class_eval do
-  include Escargot::ActiveRecordExtensions
+  include Escargot::ModelExtensions
 end
 
 module Escargot
@@ -10,4 +10,3 @@ module Escargot
     end
   end
 end
-
