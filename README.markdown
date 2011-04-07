@@ -25,6 +25,10 @@ Or for MongoMapper support:
 
     gem 'escargot', :require => 'escargot/adapter/mongo_mapper', :git => 'git://github.com/rlivsey/escargot.git', :branch => 'agnostic'
 
+Then add an initializer to config/initializers/ to connect to elastic search:
+
+    $elastic_search_client = ElasticSearch.new("localhost:9200")
+
 Usage
 =======
 
