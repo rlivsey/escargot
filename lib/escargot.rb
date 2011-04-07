@@ -10,7 +10,7 @@ require 'escargot/queue_backend/resque'
 
 module Escargot
   def self.register_model(model)
-    return unless model.table_exists?
+    return unless @adapter.valid_model?(model)
     @indexed_models ||= []
     @indexed_models.delete(model) if @indexed_models.include?(model)
     @indexed_models << model
@@ -26,6 +26,14 @@ module Escargot
 
   def self.queue_backend
     @queue ||= Escargot::QueueBackend::Rescue.new
+  end
+
+  def self.adapter
+    @adapter
+  end
+
+  def self.adapter=(adapter)
+    @adapter = adapter
   end
 
   def self.flush_all_indexed_models
@@ -60,7 +68,7 @@ module Escargot
   # record that has been deleted on the database
   def self.search(query, options = {}, call_by_instance_method = false)
     hits = Escargot.search_hits(query, options, call_by_instance_method)
-    hits_ar = hits.map{|hit| hit.to_activerecord}
+    hits_ar = @adapter.from_hits(hits)
     results = WillPaginate::Collection.new(hits.current_page, hits.per_page, hits.total_entries)
     results.replace(hits_ar)
     results
