@@ -1,21 +1,13 @@
 require 'escargot'
 
-ActiveRecord::Base.class_eval do
-  include Escargot::ActiveRecordExtensions
-end
-
-ElasticSearch::Api::Hit.class_eval do
-  include Escargot::HitExtensions
-end
-
-ElasticSearch::Client.class_eval do
-  include Escargot::AdminIndexVersions
-end
+# TODO - maybe move this to initializers/escargot.rb and leave it to the user to setup
+# TODO - could be nice to do Escargot.connect(...) which passes that off to ElasticSearch
+# TODO - do we need to consider reconnecting on passenger fork?
 
 unless File.exists?(Rails.root + "/config/elasticsearch.yml")
   Rails.logger.warn "No config/elastic_search.yaml file found, connecting to localhost:9200"
   $elastic_search_client = ElasticSearch.new("localhost:9200")
 else
-  config = YAML.load_file(Rails.root + "/config/elasticsearch.yml")
+  config = YAML.load_file(RAILS_ROOT + "/config/elasticsearch.yml")
   $elastic_search_client = ElasticSearch.new(config["host"] + ":" + config["port"].to_s, :timeout => 20)
 end

@@ -4,8 +4,7 @@ require 'test_helper'
 # without real time support
 
 class LocalIndexCreation < Test::Unit::TestCase
-  load_schema
-  
+    
   class User < ActiveRecord::Base
     elastic_index :updates => false
   end

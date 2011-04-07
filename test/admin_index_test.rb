@@ -1,8 +1,7 @@
 require 'test_helper'
 
 class AdminIndexTest < Test::Unit::TestCase
-  load_schema
-
+  
   class User < ActiveRecord::Base
     elastic_index
   end

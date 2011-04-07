@@ -61,3 +61,11 @@ module Escargot
   end
 
 end
+
+ElasticSearch::Api::Hit.class_eval do
+  include Escargot::HitExtensions
+end
+
+ElasticSearch::Client.class_eval do
+  include Escargot::AdminIndexVersions
+end

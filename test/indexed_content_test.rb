@@ -5,8 +5,7 @@ require 'test_helper'
 # tests the behaviour of the index creation tasks that run locally (in the "simple" mode)
 
 class IndexedContentTest < Test::Unit::TestCase
-  load_schema
-  
+    
   class User < ActiveRecord::Base
     elastic_index
     

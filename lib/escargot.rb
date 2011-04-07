@@ -16,6 +16,10 @@ module Escargot
     @indexed_models << model
   end
 
+  def self.root
+    Rails.root if defined?(Rails)
+  end
+
   def self.indexed_models
     @indexed_models || []
   end
@@ -23,7 +27,7 @@ module Escargot
   def self.queue_backend
     @queue ||= Escargot::QueueBackend::Rescue.new
   end
-  
+
   def self.flush_all_indexed_models
     @indexed_models = []
   end
@@ -40,7 +44,7 @@ module Escargot
       end
       options = options.merge({:index => models.map(&:index_name).join(',')})
     end
-    
+
     if query.kind_of?(Hash)
       query_dsl = query.delete(:query_dsl)
       query = {:query => query} if (query_dsl.nil? || query_dsl)
@@ -53,7 +57,7 @@ module Escargot
   # see ElasticSearch::Api::Index#search for the full list of valid options
   #
   # note that the collection may include nils if ElasticSearch returns a result hit for a
-  # record that has been deleted on the database  
+  # record that has been deleted on the database
   def self.search(query, options = {}, call_by_instance_method = false)
     hits = Escargot.search_hits(query, options, call_by_instance_method)
     hits_ar = hits.map{|hit| hit.to_activerecord}
@@ -80,8 +84,8 @@ module Escargot
     def self.register_all_models
       models = []
       # Search all Models in the application Rails
-      Dir[File.join("#{Rails.root}/app/models".split(/\\/), "**", "*.rb")].each do |file|
-        model = file.gsub(/#{Rails.root}\/app\/models\/(.*?)\.rb/,'\1').classify.constantize
+      Dir[File.join("#{Escargot.root}/app/models".split(/\\/), "**", "*.rb")].each do |file|
+        model = file.gsub(/#{Escargot.root}\/app\/models\/(.*?)\.rb/,'\1').classify.constantize
         unless models.include?(model)
           require file
         end

@@ -1,10 +1,10 @@
 sqlite:
   :adapter: sqlite
-  :database: vendor/plugins/escargot/test/escargot_plugins.sqlite.db
+  :database: test/escargot_plugins.sqlite.db
 
 sqlite3:
   :adapter: sqlite3
-  :database: vendor/plugins/escargot/test/escargot_plugins.sqlite3.db
+  :database: test/escargot_plugins.sqlite3.db
 
 postgresql:
   :adapter: postgresql

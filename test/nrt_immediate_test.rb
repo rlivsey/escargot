@@ -3,8 +3,7 @@
 require 'test_helper'
 
 class NrtImmediate < Test::Unit::TestCase
-  load_schema
-  resque_available
+    resque_available
   
   class User < ActiveRecord::Base
     elastic_index

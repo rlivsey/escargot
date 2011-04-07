@@ -1,0 +1,1 @@
+require 'escargot/adapter/mongo_mapper'

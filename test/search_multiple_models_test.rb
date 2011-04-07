@@ -3,8 +3,7 @@ require 'test_helper'
 
 class SearchMultipleModels < Test::Unit::TestCase
 
-  load_schema
-  flush_indexes_models
+    flush_indexes_models
   
   class User < ActiveRecord::Base
     elastic_index

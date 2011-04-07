@@ -2,8 +2,7 @@
 require 'test_helper'
 
 class CustomIndexOptions < Test::Unit::TestCase
-  load_schema
-
+  
   class User < ActiveRecord::Base
     elastic_index(
       :updates => false, 

@@ -5,8 +5,7 @@ require 'test_helper'
 # without real time support
 
 class BasicSearchTest < Test::Unit::TestCase
-  load_schema
-  
+    
   class ::User < ActiveRecord::Base
     elastic_index :updates => false, :mapping => {
         :properties => {
