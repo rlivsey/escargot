@@ -5,10 +5,25 @@ Escargot
 Connects any Rails model with ElasticSearch, supports near real time updates,
 distributed indexing and models that integrate data from many databases.  
 
+Currently supports ActiveRecord and MongoMapper, but additional adapters are trivial to implement.
+
 Requirements
 ============
-Currently only rails 2.3 is supported. You will need ElasticSearch, the 'rubberband' gem
-and (if you want to use the **optional** distributed indexing mode) Redis. 
+
+You will need ElasticSearch, the 'rubberband' gem and (if you want to use the **optional** distributed indexing mode) Redis. 
+
+For MongoMapper, you'll need version 0.9 which hasn't yet been released but is available from git.
+
+Installation
+=======
+
+Simply add the following to your Gemfile for ActiveRecord support
+
+    gem 'escargot', :require => 'escargot/adapter/active_record', :git => 'git://github.com/rlivsey/escargot.git', :branch => 'agnostic'
+
+Or for MongoMapper support:
+
+    gem 'escargot', :require => 'escargot/adapter/mongo_mapper', :git => 'git://github.com/rlivsey/escargot.git', :branch => 'agnostic'
 
 Usage
 =======
@@ -20,6 +35,13 @@ necessary.
 To define an index, simply add a line to your model
 
     class Post < ActiveRecord::Base
+      elastic_index
+    end
+
+Or for MongoMapper:
+
+    class Post
+      include MongoMapper::Document
       elastic_index
     end
 
