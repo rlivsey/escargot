@@ -38,12 +38,24 @@ module Escargot
       end
 
       def self.from_hits(hits)
-        hits.collect do |hit|
-          model_class = hit._type.gsub(/-/,'/').classify.constantize
-          begin
-            model_class.find(hit.id)
-          rescue ::ActiveRecord::RecordNotFound
-            nil
+        return [] if hits.empty?
+
+        # if they're all the same type, fetch in one query and then re-order to maintain original ordering
+        if hits.collect(&:_type).uniq.size == 1
+          ids     = hits.collect{|hit| hit.id.to_s}
+          model   = hits.first._type.gsub(/-/,'/').classify.constantize
+          results = all_with_ids(model, ids)
+          index   = results.inject({}){|memo, result| memo[result.send(model.primary_key).to_s] = result; memo }
+          ids.collect{|id| index[id] }
+
+        else # TODO - we could do this in a batch per type
+          hits.collect do |hit|
+            model_class = hit._type.gsub(/-/,'/').classify.constantize
+            begin
+              model_class.find(hit.id)
+            rescue ::ActiveRecord::RecordNotFound
+              nil
+            end
           end
         end
       end
