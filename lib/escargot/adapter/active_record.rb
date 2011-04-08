@@ -7,6 +7,14 @@ end
 module Escargot
   module Adapter
     module ActiveRecord
+      def self.default_index_name(model)
+        model.name.underscore.gsub(/\//,'-')
+      end
+
+      def self.default_index_type(model)
+        model.name.underscore.gsub(/\//,'-')
+      end
+
       def self.valid_model?(model)
         model.table_exists?
       end

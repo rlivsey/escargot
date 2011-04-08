@@ -2,8 +2,10 @@ require 'escargot/adapter/mongo_mapper'
 
 MongoMapper.database = 'escargot-test'
 
-def TestModel(name, scope=nil, &block)
-  klass = (scope || self).const_set(name, Class.new)
+def TestModel(name, scope=nil, superclass=nil, &block)
+  superclass ||= Class.new
+  scope      ||= self
+  klass = scope.const_set(name, superclass)
   klass.class_eval do
     include MongoMapper::Document
   end

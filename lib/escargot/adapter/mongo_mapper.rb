@@ -4,6 +4,14 @@ require 'escargot'
 module Escargot
   module Adapter
     module MongoMapper
+      def self.default_index_name(model)
+        model.name.underscore.gsub(/\//,'-')
+      end
+
+      def self.default_index_type(model)
+        model.name.underscore.gsub(/\//,'-')
+      end
+
       def self.valid_model?(model)
         true
       end

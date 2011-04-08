@@ -7,11 +7,14 @@ module Escargot
 
     module ClassMethods
       attr_accessor :index_name
+      attr_accessor :index_type
       attr_accessor :update_index_policy
 
       # defines an elastic search index. Valid options:
       #
       # :index_name (will default class name using method "underscore")
+      # 
+      # :index_type (will default class name using method "underscore") 
       #
       # :updates, how to to update the contents of the index when a document is changed, valid options are:
       #
@@ -37,7 +40,8 @@ module Escargot
         Escargot.register_model(self)
 
         options.symbolize_keys!
-        @index_name = options[:index_name] || self.name.underscore.gsub(/\//,'-')
+        @index_name = options[:index_name] || Escargot.adapter.default_index_name(self)
+        @index_type = options[:index_type] || Escargot.adapter.default_index_type(self)
         @update_index_policy = options.include?(:updates) ? options[:updates] : :immediate
 
         if @update_index_policy
@@ -49,15 +53,15 @@ module Escargot
       end
 
       def search(query, options={})
-        Escargot.search(query, options.merge({:index => self.index_name, :type => elastic_search_type}), true)
+        Escargot.search(query, options.merge({:index => self.index_name, :type => self.index_type}), true)
       end
 
       def search_hits(query, options = {})
-        Escargot.search_hits(query, options.merge({:index => self.index_name, :type => elastic_search_type}), true)
+        Escargot.search_hits(query, options.merge({:index => self.index_name, :type => self.index_type}), true)
       end
 
       def search_count(query = "*", options = {})
-        Escargot.search_count(query, options.merge({:index => self.index_name, :type => elastic_search_type}), true)
+        Escargot.search_count(query, options.merge({:index => self.index_name, :type => self.index_type}), true)
       end
 
       def facets(fields_list, options = {})
@@ -75,7 +79,7 @@ module Escargot
           options[:facets][field] = {:terms => {:field => field, :size => size}}
         end
 
-        hits = $elastic_search_client.search(options, {:index => self.index_name, :type => elastic_search_type})
+        hits = $elastic_search_client.search(options, {:index => self.index_name, :type => self.index_type})
         out = {}
 
         fields_list.each do |field|
@@ -100,7 +104,7 @@ module Escargot
       def create_index_version
         index_version = $elastic_search_client.create_index_version(@index_name, @index_options)
         if @mapping
-          $elastic_search_client.update_mapping(@mapping, :index => index_version, :type => elastic_search_type)
+          $elastic_search_client.update_mapping(@mapping, :index => index_version, :type => self.index_type)
         end
         index_version
       end
@@ -126,19 +130,13 @@ module Escargot
 
       def delete_id_from_index(id, options = {})
         options[:index] ||= self.index_name
-        options[:type]  ||= elastic_search_type
+        options[:type]  ||= self.index_type
         $elastic_search_client.delete(id.to_s, options)
       end
 
       def optimize_index
         $elastic_search_client.optimize(index_name)
       end
-
-      private
-        def elastic_search_type
-          self.name.underscore.singularize.gsub(/\//,'-')
-        end
-
     end
 
     module InstanceMethods
@@ -169,7 +167,7 @@ module Escargot
 
       def local_index_in_elastic_search(options = {})
         options[:index] ||= self.class.index_name
-        options[:type]  ||= self.class.name.underscore.singularize.gsub(/\//,'-')
+        options[:type]  ||= self.class.index_type
         options[:id]    ||= self.id.to_s
 
         $elastic_search_client.index(

@@ -28,8 +28,11 @@ end
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/../active_record.log")
 ActiveRecord::Base.establish_connection(config[db_adapter])
 
-def TestModel(name, scope=nil, &block)
-  klass = (scope || self).const_set(name, Class.new(ActiveRecord::Base))
+def TestModel(name, scope=nil, superclass=nil, &block)
+  superclass ||= Class.new(ActiveRecord::Base)
+  scope      ||= self
+
+  klass = scope.const_set(name, superclass)
   klass.class_eval &block
   klass.delete_all
   klass
@@ -42,12 +45,9 @@ ActiveRecord::Schema.define(:version => 0) do
     t.date :created_at
   end
 
-  create_table :dogs, :force => true do |t|
+  create_table :animals, :force => true do |t|
     t.string :name
-  end
-
-  create_table :cats, :force => true do |t|
-    t.string :name
+    t.string :type
   end
 
   create_table :legacy_users, :force => true, :primary_key => :legacy_id do |t|
