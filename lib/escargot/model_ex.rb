@@ -6,15 +6,11 @@ module Escargot
     extend ActiveSupport::Concern
 
     module ClassMethods
-      attr_accessor :index_name
-      attr_accessor :index_type
-      attr_accessor :update_index_policy
-
       # defines an elastic search index. Valid options:
       #
       # :index_name (will default class name using method "underscore")
-      # 
-      # :index_type (will default class name using method "underscore") 
+      #
+      # :index_type (will default class name using method "underscore")
       #
       # :updates, how to to update the contents of the index when a document is changed, valid options are:
       #
@@ -37,19 +33,26 @@ module Escargot
       #
 
       def elastic_index(options = {})
+        class_attribute :index_name
+        class_attribute :index_type
+        class_attribute :update_index_policy
+        class_attribute :index_options
+        class_attribute :mapping
+
         Escargot.register_model(self)
 
         options.symbolize_keys!
-        @index_name = options[:index_name] || Escargot.adapter.default_index_name(self)
-        @index_type = options[:index_type] || Escargot.adapter.default_index_type(self)
-        @update_index_policy = options.include?(:updates) ? options[:updates] : :immediate
+        self.index_name = options[:index_name] || Escargot.adapter.default_index_name(self)
+        self.index_type = options[:index_type] || Escargot.adapter.default_index_type(self)
+        self.update_index_policy = options.include?(:updates) ? options[:updates] : :immediate
 
-        if @update_index_policy
+        if self.update_index_policy
           after_save :update_index
           after_destroy :delete_from_index
         end
-        @index_options = options[:index_options] || {}
-        @mapping = options[:mapping] || false
+
+        self.index_options = options[:index_options] || {}
+        self.mapping = options[:mapping] || false
       end
 
       def search(query, options={})
@@ -102,9 +105,9 @@ module Escargot
 
       # creates a new index version for this model and sets the mapping options for the type
       def create_index_version
-        index_version = $elastic_search_client.create_index_version(@index_name, @index_options)
-        if @mapping
-          $elastic_search_client.update_mapping(@mapping, :index => index_version, :type => self.index_type)
+        index_version = $elastic_search_client.create_index_version(self.index_name, self.index_options)
+        if self.mapping
+          $elastic_search_client.update_mapping(self.mapping, :index => index_version, :type => self.index_type)
         end
         index_version
       end
