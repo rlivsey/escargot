@@ -51,6 +51,8 @@ module Escargot
           after_destroy :delete_from_index
         end
 
+        attr_accessor :hit
+
         self.index_options = options[:index_options] || {}
         self.mapping = options[:mapping] || false
       end
