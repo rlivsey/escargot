@@ -68,7 +68,7 @@ module Escargot
   # record that has been deleted on the database
   def self.search(query, options = {}, call_by_instance_method = false)
     hits = Escargot.search_hits(query, options, call_by_instance_method)
-    hits_ar = @adapter.from_hits(hits)
+    hits_ar = @adapter.from_hits(hits, options)
     results = WillPaginate::Collection.new(hits.current_page, hits.per_page, hits.total_entries)
     results.replace(hits_ar)
     results
